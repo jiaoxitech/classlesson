@@ -39,17 +39,13 @@ void loop()
   duration = pulseIn(echoPin, HIGH);
   cm = duration / 58.0;
 
-  if ( cm > 100 ) 
+  if ( cm < 100 ) 
   {
-    colorGreen();
-  } 
-  else if ( cm > 50 )
-  {
-    colorYellow();
+    colorRed();
   } 
   else 
   {
-    colorRed();
+    colorGreen();
   }
 
   delay(200);
@@ -60,13 +56,6 @@ void colorRed()
   analogWrite(redLed, 200);
   analogWrite(blueLed, 255);
   analogWrite(greenLed, 255);
-}
-
-void colorYellow()
-{
-  analogWrite(redLed, 200);
-  analogWrite(blueLed, 255);
-  analogWrite(greenLed, 200);
 }
 
 void colorGreen()
