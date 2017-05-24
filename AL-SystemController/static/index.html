@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Jiaoxi Aquaponics Lab</title>
+
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link href="index.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="page-header">
+        <h1>Jiaoxi Aquaponics Lab
+        <span class="pull-right"><a id="btnCamera" class="btn btn-success btn-lg">Camera</a></span></h1>
+      </div>
+    <table class="table table-striped"> 
+      <thead><tr> 
+        <th>Power</th> <th>On</th> <th>Off</th> 
+      </tr></thead>
+      <tbody>
+        <!-- the water pump is set on "normally closed", so we reverse it here -->
+        <tr><td>Water Pump</td><td><div class="radio"><label><input type="radio" name="relay1" id="relay1off" value="true"></label></div></td><td><div class="radio"><label><input type="radio" name="relay1" id="relay1on" value="false"></label></div></td></tr>
+        <tr><td>Grow Bed #1</td><td><div class="radio"><label><input type="radio" name="relay2" id="relay2on" value="true"></label></div></td><td><div class="radio"><label><input type="radio" name="relay2" id="relay2off" value="false"></label></div></td></tr>
+        <tr><td>Grow Bed #2</td><td><div class="radio"><label><input type="radio" name="relay3" id="relay3on" value="true"></label></div></td><td><div class="radio"><label><input type="radio" name="relay3" id="relay3off" value="false"></label></div></td></tr>
+        <tr><td>Grow Bed #3</td><td><div class="radio"><label><input type="radio" name="relay4" id="relay4on" value="true"></label></div></td><td><div class="radio"><label><input type="radio" name="relay4" id="relay4off" value="false"></label></div></td></tr>
+        <tr><td>Grow Bed #4</td><td><div class="radio"><label><input type="radio" name="relay5" id="relay5on" value="true"></label></div></td><td><div class="radio"><label><input type="radio" name="relay5" id="relay5off" value="false"></label></div></td></tr>
+        <tr><td>Grow Bed #5</td><td><div class="radio"><label><input type="radio" name="relay6" id="relay6on" value="true"></label></div></td><td><div class="radio"><label><input type="radio" name="relay6" id="relay6off" value="false"></label></div></td></tr>
+        <tr><td>Koi Pond</td><td><div class="radio"><label><input type="radio" name="relay7" id="relay7on" value="true"></label></div></td><td><div class="radio"><label><input type="radio" name="relay7" id="relay7off" value="false"></label></div></td></tr>
+      </tbody>
+    </table> 
+    <table class="table table-striped"> 
+      <thead><tr> 
+        <th>Sensor</th> <th>Value</th> <th>Time Checked</th> 
+      </tr></thead>
+      <tbody>
+        <tr><td>Light</td><td id="lightVal"></td><td id="lightTime"></td></tr>
+        <tr><td>RGB</td><td id="rgbVal"></td><td id="rgbTime"></td></tr>
+        <tr><td>Air Temp</td><td id="tempVal"></td><td id="tempTime"></td></tr>
+        <tr><td>Pressure</td><td id="pressVal"></td><td id="pressTime"></td></tr>
+        <tr><td>Water Level #1</td><td id="waterLevel1Val"></td><td id="waterLevel1Time"></td></tr>
+        <tr><td>Water Temp</td><td id="waterTempVal"></td><td id="waterTempTime"></td></tr>
+      </tbody>
+    </table> 
+    </div>
+    <script src="jquery-3.2.1.js"></script>
+    <script>
+$('#btnCamera').click(function(){
+  $.get('/camera/on');
+} );
+
+function monitorLatest() {
+  $.get('/latest').done(function(data) { 
+    $.each(data, function(idx, value) {
+      switch(value.sensor) {
+        case 'light':
+          $('#lightVal').html(value.value);
+          $('#lightTime').html(value.timestamp); 
+          break;
+        case 'rgb':
+          $('#rgbVal').html(value.value);
+          $('#rgbTime').html(value.timestamp);
+          break;
+        case 'temp':
+          $('#tempVal').html(value.value);
+          $('#tempTime').html(value.timestamp);
+          break;
+        case 'press':
+          $('#pressVal').html(value.value);
+          $('#pressTime').html(value.timestamp);
+          break;
+        case 'water1':
+          $('#waterLevel1Val').html(value.value);
+          $('#waterLevel1Time').html(value.timestamp);
+          break;
+        case 'watertemp':
+          $('#waterTempVal').html(value.value);
+          $('#waterTempTime').html(value.timestamp);
+          break;
+      }
+    });
+  }).always(function() { setTimeout(monitorLatest, 60000); });
+}
+monitorLatest();
+
+function monitorRelays() {
+  $.get('/relay_status').done(function(data) {
+    if (data[1].status) {
+      $('#relay1on').prop('checked', true);
+      $('#relay1off').prop('checked', false); 
+    } else {
+      $('#relay1on').prop('checked', false);
+      $('#relay1off').prop('checked', true); 
+    }
+    if (data[2].status) {
+      $('#relay2on').prop('checked', true);
+      $('#relay2off').prop('checked', false); 
+    } else {
+      $('#relay2on').prop('checked', false);
+      $('#relay2off').prop('checked', true); 
+    }
+    if (data[3].status) {
+      $('#relay3on').prop('checked', true);
+      $('#relay3off').prop('checked', false); 
+    } else {
+      $('#relay3on').prop('checked', false);
+      $('#relay3off').prop('checked', true); 
+    }
+    if (data[4].status) {
+      $('#relay4on').prop('checked', true);
+      $('#relay4off').prop('checked', false); 
+    } else {
+      $('#relay4on').prop('checked', false);
+      $('#relay4off').prop('checked', true); 
+    }
+    if (data[5].status) {
+      $('#relay5on').prop('checked', true);
+      $('#relay5off').prop('checked', false); 
+    } else {
+      $('#relay5on').prop('checked', false);
+      $('#relay5off').prop('checked', true); 
+    }
+    if (data[6].status) {
+      $('#relay6on').prop('checked', true);
+      $('#relay6off').prop('checked', false); 
+    } else {
+      $('#relay6on').prop('checked', false);
+      $('#relay6off').prop('checked', true); 
+    }
+    if (data[7].status) {
+      $('#relay7on').prop('checked', true);
+      $('#relay7off').prop('checked', false); 
+    } else {
+      $('#relay7on').prop('checked', false);
+      $('#relay7off').prop('checked', true); 
+    }
+  }).always(function() { setTimeout(monitorRelays, 1000); });
+};
+monitorRelays();
+
+
+$('#relay1on').click(function() {
+  $.get('/relay/1/1');
+});
+$('#relay1off').click(function() {
+  $.get('/relay/1/0');
+});
+$('#relay2on').click(function() {
+  $.get('/relay/2/1');
+});
+$('#relay2off').click(function() {
+  $.get('/relay/2/0');
+});
+$('#relay3on').click(function() {
+  $.get('/relay/3/1');
+});
+$('#relay3off').click(function() {
+  $.get('/relay/3/0');
+});
+$('#relay4on').click(function() {
+  $.get('/relay/4/1');
+});
+$('#relay4off').click(function() {
+  $.get('/relay/4/0');
+});
+$('#relay5on').click(function() {
+  $.get('/relay/5/1');
+});
+$('#relay5off').click(function() {
+  $.get('/relay/5/0');
+});
+$('#relay6on').click(function() {
+  $.get('/relay/6/1');
+});
+$('#relay6off').click(function() {
+  $.get('/relay/6/0');
+});
+$('#relay7on').click(function() {
+  $.get('/relay/7/1');
+});
+$('#relay7off').click(function() {
+  $.get('/relay/7/0');
+});
+$('#relay8on').click(function() {
+  $.get('/relay/8/1');
+});
+$('#relay8off').click(function() {
+  $.get('/relay/8/0');
+});
+
+
+    </script>
+  </body>
+</html>
+
