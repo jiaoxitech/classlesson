@@ -1,26 +1,31 @@
 // 預設的燈為pin13. Pin 13 for built in LED
 int led1 =13;
 
-//第一個馬達設置前進後退為pin3&4. Set Motor-1 for forward and backward as pin 3&4. 
+// 第一個馬達設置前進後退為pin3&4. Set Motor-1 for forward and backward as pin 3&4. 
 int A1A = 3;
 int A1B = 4;
-//第二個馬達設置前進後退為pin6&7. Set Motor-2 for forward and backward as pin 6&7. 
+// 第二個馬達設置前進後退為pin6&7. Set Motor-2 for forward and backward as pin 6&7. 
 int B1A = 6;
 int B1B = 7;
 
-//設置超聲波觸發端為pin10,接收端為pin11. Set Pin 10 for Trigger Pin, Pin 11 for Echo Pin.
+// 設置超聲波觸發端為pin10,接收端為pin11. Set Pin 10 for Trigger Pin, Pin 11 for Echo Pin.
 int triPin = 10;
 int echoPin = 11;
 // duration持續時間 & cm公分 為長整數
 long duration, cm;
 
-// 設置另一個燈為pin2. Pin 2 for another LED.
+// 設置另一個燈為pin9. Pin 9 for another LED.
 int led2 = 9; 
 
+// 設置一個按鍵pin2
+int buttonPin = 2;
+int buttonState = 0;
+
 void setup() {
-  //設LED端為output. Set the led1 & led2 pins to output mode
+  // 設LED端為output. Set the led1 & led2 pins to output mode
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
+  pinMode(buttonPin, INPUT);
   
   // 設置馬達四個端皆為output. Set all motor pins to output mode
   pinMode(A1A, OUTPUT);
@@ -34,47 +39,47 @@ void setup() {
   Serial.begin(9600);
   
   // 等待五秒&停止馬達. Delay for 5000 milliseconds, which is 5 seconds 
-  delay(5000);
+  delay(1000);
   digitalWrite(led1, LOW);
   digitalWrite(A1A, LOW);
   digitalWrite(A1B, LOW);
   digitalWrite(B1A, LOW);
-  digitalWrite(B1B, LOW);
+  digitalWrite(B1B, LOW);                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+  
 }
 
 void loop() {
-  //把觸發端打開60微秒然後關掉. Turn on the Trigger pin for 10 microseconds then turn off.
-  //1秒=1000毫秒=1000000微秒
-  digitalWrite(triPin, HIGH);
-  delayMicroseconds(60);
-  digitalWrite(triPin, LOW);
-
-  //使用pulsein 計算接收到的持續時間 再除以(聲速*兩倍距離)29*2
-  //距離(cm) = 時間(us) / 2(來回) /29.1 (m/s轉換cm/us)
-  duration = pulseIn(echoPin, HIGH);
-  cm = duration / 58.0;
-
-  //列出車子前方距離.Print out the distance
-  Serial.print(cm);
-  Serial.println("cm");
-
-  // 如果前方距離大於8公分車子前進.If front distance>8cm the car goes forward.
-  if (cm > 8){
-    digitalWrite(led2, LOW); 
-    digitalWrite(led1, HIGH);
-    digitalWrite(A1A, HIGH);
-    digitalWrite(A1B, LOW);
-    digitalWrite(B1A, HIGH);
-    digitalWrite(B1B, LOW);  
-  // 如果前方距離小於8公分車子轉彎.Other situations which is the distance < 8cm, turn the car.  
-  }else{
+  // 當按鍵按下的時候啟動下列動作
+  buttonState = digitalRead(buttonPin);
+  while (buttonState == HIGH)
+  {
     digitalWrite(led2, HIGH);
-    digitalWrite(led1, LOW);
-    digitalWrite(A1A, HIGH);
-    digitalWrite(A1B, LOW);
-    digitalWrite(B1A, LOW);
-    digitalWrite(B1B, HIGH);
-    delay(1000); 
+    // 把觸發端打開60微秒然後關掉. Turn on the Trigger pin for 10 microseconds then turn off. 
+    digitalWrite(triPin, HIGH);
+    delayMicroseconds(60);
+    digitalWrite(triPin, LOW);
+    // 使用pulsein 計算接收到的持續時間 再除以(聲速*兩倍距離)29*2
+    //距離(cm) = 時間(us) / 2(來回) /29.1 (m/s轉換cm
+    duration = pulseIn(echoPin, HIGH);
+    cm = duration / 58.0;
+    // 如果前方距離大於8公分車子前進.If front distance>8cm the car goes forward.
+      if (cm > 8){
+        digitalWrite(led2, LOW); 
+        digitalWrite(led1, HIGH);
+        digitalWrite(A1A, LOW);
+        digitalWrite(A1B, HIGH);
+        digitalWrite(B1A, LOW);
+        digitalWrite(B1B, HIGH);  
+      // 如果前方距離小於8公分車子轉彎.Other situations which is the distance < 8cm, turn the car.  
+      }else{
+        digitalWrite(led2, HIGH);
+        digitalWrite(led1, LOW);
+        digitalWrite(A1A, HIGH);
+        digitalWrite(A1B, LOW);
+        digitalWrite(B1A, LOW);
+        digitalWrite(B1B, HIGH);
+        delay(1000); 
+      }
+  delay(200);   
   }
-  delay(200);  
 }
