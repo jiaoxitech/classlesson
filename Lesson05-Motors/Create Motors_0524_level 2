@@ -1,0 +1,56 @@
+// 預設的燈為pin13. Pin 13 for built in LED
+int led1 =13;
+
+// 設置超聲波觸發端為pin10,接收端為pin11. 
+// Set Pin 10 for Trigger Pin, Pin 11 for Echo Pin.
+int triPin = 10;
+int echoPin = 11;
+// duration持續時間 & cm公分 為長整數
+long duration, cm;
+
+// 設置另一個燈為pin2. Pin 2 for another LED.
+int led2 = 9; 
+
+void setup() {
+  //設LED端為output. Set the led1 & led2 pins to output mode
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  
+  // 設觸發端為output模式＆接收端為input模式. 
+	//Set triPin to OUTPUT mode and echPin to INPUT mode
+  pinMode(triPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  
+  Serial.begin(9600);
+}
+
+void loop() {
+  //把觸發端打開60微秒然後關掉. Turn on the Trigger pin for 10 microseconds then turn off.
+  //1秒=1000毫秒=1000000微秒
+  digitalWrite(triPin, HIGH);
+  delayMicroseconds(60);
+  digitalWrite(triPin, LOW);
+
+  //使用pulsein 計算接收到的持續時間 再除以(聲速*兩倍距離)29*2
+  //距離(cm) = 時間(us) / 2(來回) /29.1 (m/s轉換cm/us)
+  duration = pulseIn(echoPin, HIGH);
+  cm = duration / 58.0;
+
+  //列出車子前方距離.Print out the distance
+  Serial.print(cm);
+  Serial.println("cm");
+
+  // 如果前方距離大於8公分led1亮燈 led2熄燈.
+	// If front distance>8cm led1 turn on led2 turn off 
+  if (cm > 8){
+    digitalWrite(led2, LOW); 
+    digitalWrite(led1, HIGH);
+
+  // 如果前方距離小於8公分led1熄燈 led2亮燈.
+	// Other situations which is the distance < 8cm, turn led1 off led2 on.  
+  }else{
+    digitalWrite(led2, HIGH);
+    digitalWrite(led1, LOW);
+  }
+  delay(200);  
+}
