@@ -1,0 +1,37 @@
+// 預設的燈為pin13. Pin 13 for built in LED
+int led1 =13;
+//第一個馬達設置前進後退為pin3&4. Set Motor-1 for forward and backward as pin 3&4. 
+int A1A = 3;
+int A1B = 4;
+//第二個馬達設置前進後退為pin6&7. Set Motor-2 for forward and backward as pin 6&7. 
+int B1A = 6;
+int B1B = 7;
+
+void setup() {
+  //設LED端為output. Set the led1 pin to output mode
+  pinMode(led1, OUTPUT);
+
+  // 設置馬達四個端皆為output. Set all motor pins to output mode
+  pinMode(A1A, OUTPUT);
+  pinMode(A1B, OUTPUT);
+  pinMode(B1A, OUTPUT);
+  pinMode(B1B, OUTPUT);
+
+  // 等待五秒&停止馬達. Delay for 5000 milliseconds, which is 5 seconds 
+  delay(5000);
+  digitalWrite(led1, LOW);
+  digitalWrite(A1A, LOW);
+  digitalWrite(A1B, LOW);
+  digitalWrite(B1A, LOW);
+  digitalWrite(B1B, LOW);                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+}
+
+void loop() {
+ 	digitalWrite(led1, HIGH);
+  digitalWrite(A1A, LOW);   //Turn off motor1 A direction 
+  digitalWrite(A1B, HIGH);	//Turn on motor1 B direction 
+  digitalWrite(B1A, LOW);		//Turn off motor2 A direction 
+  digitalWrite(B1B, HIGH);  //Turn on motor2 B direction 
+
+  delay(200);   
+}
